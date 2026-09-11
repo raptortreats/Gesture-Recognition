@@ -13,6 +13,11 @@ from numpy.typing import NDArray
 from gesture_recognition.classifier import NUM_LANDMARKS, Landmark
 from gesture_recognition.config import Settings
 
+
+class LandmarkError(RuntimeError):
+    """Raised when the Hand Landmarker native library cannot be loaded."""
+
+
 BaseOptions = mp.tasks.BaseOptions
 HandLandmarker = mp.tasks.vision.HandLandmarker
 HandLandmarkerOptions = mp.tasks.vision.HandLandmarkerOptions
@@ -50,7 +55,14 @@ class HandTracker:
             min_hand_presence_confidence=settings.min_presence_confidence,
             min_tracking_confidence=settings.min_tracking_confidence,
         )
-        self._landmarker = HandLandmarker.create_from_options(options)
+        try:
+            self._landmarker = HandLandmarker.create_from_options(options)
+        except OSError as exc:
+            raise LandmarkError(
+                "MediaPipe failed to load its native library. On Debian/Ubuntu, "
+                "install EGL with: sudo apt-get install libegl1. "
+                f"Original error: {exc}"
+            ) from exc
         self._video = video
 
     def close(self) -> None:
