@@ -42,6 +42,12 @@ source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
+On Debian/Ubuntu, MediaPipe’s native library also needs EGL (usually already present on desktop installs):
+
+```bash
+sudo apt-get install -y libegl1
+```
+
 Optional, so `python -m gesture_recognition` works without setting `PYTHONPATH`:
 
 ```bash

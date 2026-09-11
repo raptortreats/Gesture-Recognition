@@ -92,13 +92,16 @@ def annotate_frame(
     frame: NDArray[np.uint8],
     hands: list[tuple[HandObservation, Gesture]],
     fps: float | None = None,
+    *,
+    show_quit: bool = True,
 ) -> NDArray[np.uint8]:
     """Draw landmarks plus a top-left HUD. Mutates and returns `frame`."""
     if not hands:
         lines = ["No Hand"]
         if fps is not None:
             lines.append(f"FPS: {fps:.1f}")
-        lines.append("Press q to quit")
+        if show_quit:
+            lines.append("Press q to quit")
         _banner(frame, lines)
         return frame
 
@@ -112,6 +115,7 @@ def annotate_frame(
     if len(hands) > 1:
         extra = ", ".join(g.value for _, g in hands[1:])
         lines.append(f"Also: {extra}")
-    lines.append("Press q to quit")
+    if show_quit:
+        lines.append("Press q to quit")
     _banner(frame, lines)
     return frame

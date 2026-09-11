@@ -9,9 +9,9 @@ from pathlib import Path
 import cv2
 
 from gesture_recognition.camera import CameraError, open_capture, read_frame, release_capture
-from gesture_recognition.classifier import Gesture, classify_gesture
+from gesture_recognition.classifier import classify_gesture
 from gesture_recognition.config import Settings
-from gesture_recognition.landmarks import HandTracker
+from gesture_recognition.landmarks import HandTracker, LandmarkError
 from gesture_recognition.model import ModelError, ensure_model
 from gesture_recognition.overlay import annotate_frame
 
@@ -86,14 +86,14 @@ def run_webcam(settings: Settings) -> int:
                     instant = 1.0 / dt
                     fps = instant if fps == 0.0 else (0.85 * fps + 0.15 * instant)
 
-                annotate_frame(frame, hands, fps=fps)
+                annotate_frame(frame, hands, fps=fps, show_quit=settings.show_window)
                 if not _show_or_skip(settings.window_name, frame, settings.show_window):
                     break
                 if not settings.show_window:
                     # Headless webcam does not make sense as an infinite loop.
                     _maybe_write(frame, settings.output)
                     break
-    except (CameraError, AppError, ModelError) as exc:
+    except (CameraError, AppError, ModelError, LandmarkError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
     finally:
@@ -124,7 +124,7 @@ def run_image(settings: Settings) -> int:
             if settings.mirror:
                 frame = cv2.flip(frame, 1)
             hands = _classify_hands(tracker, frame)
-            annotate_frame(frame, hands, fps=None)
+            annotate_frame(frame, hands, fps=None, show_quit=settings.show_window)
             _maybe_write(frame, settings.output)
             if settings.show_window:
                 try:
@@ -139,7 +139,7 @@ def run_image(settings: Settings) -> int:
                         "OpenCV could not open a preview window (no display?). "
                         "Re-run with --no-window and --output path.jpg."
                     ) from exc
-    except (AppError, ModelError) as exc:
+    except (AppError, ModelError, LandmarkError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
     finally:
