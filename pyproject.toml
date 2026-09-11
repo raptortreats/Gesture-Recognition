@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gesture-recognition"
+version = "0.1.0"
+description = "Real-time webcam hand-gesture recognition with MediaPipe Hands and OpenCV"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "raptortreats" }]
+dependencies = [
+    "opencv-python==4.14.0.94",
+    "opencv-contrib-python==4.14.0.94",
+    "mediapipe==1.0.1",
+    "numpy==2.2.6",
+]
+
+[project.scripts]
+gesture-recognition = "gesture_recognition.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
