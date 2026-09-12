@@ -1,0 +1,7 @@
+# Pinned for a clone-and-run starter. OpenCV 4.x is used (not 5.x) so it
+# stays compatible with MediaPipe 1.x. MediaPipe also depends on
+# opencv-contrib-python; pin the same 4.x line to avoid a mixed install.
+opencv-python==4.14.0.94
+opencv-contrib-python==4.14.0.94
+mediapipe==1.0.1
+numpy==2.2.6
